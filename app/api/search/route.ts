@@ -259,6 +259,7 @@ async function searchGoogle(location: string, category: HospitalityCategory, api
       openingHours: place.regularOpeningHours ? { descriptions: { open: place.regularOpeningHours.weekdayDescriptions?.join(' | ') || 'Available', close: '' } } : null,
       mapUrl: place.googleMapsUri || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([place.displayName?.text, address].filter(Boolean).join(', '))}`,
       photoName: place.photos?.[0]?.name || null,
+      photoNames: place.photos?.map((photo) => photo.name).filter((name): name is string => Boolean(name)).slice(0, 12) || [],
       latitude, longitude, source: 'Google Places API',
       dataCompleteness: Math.min([place.displayName?.text, address, phone, website, place.rating].filter(Boolean).length * 20, 100),
       lastVerifiedAt: new Date().toISOString(),

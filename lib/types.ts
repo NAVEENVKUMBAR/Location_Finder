@@ -49,6 +49,7 @@ export interface Business {
   openingHours: OpeningHours | null;
   mapUrl: string | null;
   photoName?: string | null;
+  photoNames?: string[];
   latitude: number | null;
   longitude: number | null;
   source: string;
