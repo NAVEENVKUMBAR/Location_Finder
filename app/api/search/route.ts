@@ -40,6 +40,26 @@ type GoogleSearchPayload = {
 const SEARCH_RADIUS_METERS = 10_000
 const TOMTOM_PAGE_SIZE = 100
 const MAX_PAGES_PER_TERM = 10
+const API_TIMEOUT_MS = 15_000
+const WEBSITE_CHECK_CONCURRENCY = 8
+const VALID_CATEGORIES = new Set<HospitalityCategory>([
+  'All Hospitality', 'Hotels', 'Restaurants', 'PGs', 'Hostels', 'Resorts', 'Lodges',
+  'Homestays', 'Guest Houses', 'Cafés', 'Other Hospitality',
+])
+
+async function mapWithConcurrency<T, R>(items: T[], concurrency: number, worker: (item: T, index: number) => Promise<R>) {
+  const results = new Array<R>(items.length)
+  let nextIndex = 0
+  async function consume() {
+    while (true) {
+      const index = nextIndex++
+      if (index >= items.length) return
+      results[index] = await worker(items[index], index)
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, consume))
+  return results
+}
 
 function addSearchParams(url: URL, apiKey: string, lat: number, lon: number, offset: number, radius = SEARCH_RADIUS_METERS) {
   url.searchParams.set('key', apiKey)
@@ -122,7 +142,7 @@ function distanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number
 }
 
 async function tomTomFetch(url: URL) {
-  const response = await fetch(url, { cache: 'no-store' })
+  const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(API_TIMEOUT_MS) })
   if (!response.ok) throw new Error(`TomTom returned ${response.status}`)
   return response.json()
 }
@@ -223,7 +243,7 @@ async function searchGoogle(location: string, category: HospitalityCategory, api
     }
   }
 
-  const businesses = await Promise.all([...unique.values()].map(async (place, index) => {
+  const businesses = await mapWithConcurrency([...unique.values()], WEBSITE_CHECK_CONCURRENCY, async (place, index) => {
     const latitude = Number(place.location!.latitude)
     const longitude = Number(place.location!.longitude)
     const website = normalizeUrl(place.websiteUri)
@@ -243,7 +263,7 @@ async function searchGoogle(location: string, category: HospitalityCategory, api
       dataCompleteness: Math.min([place.displayName?.text, address, phone, website, place.rating].filter(Boolean).length * 20, 100),
       lastVerifiedAt: new Date().toISOString(),
     } satisfies Business
-  }))
+  })
 
   const withinRadius = businesses.filter((business) => distanceInMeters(center.lat, center.lng, business.latitude, business.longitude) <= SEARCH_RADIUS_METERS)
   withinRadius.sort((a, b) => distanceInMeters(center.lat, center.lng, a.latitude, a.longitude) - distanceInMeters(center.lat, center.lng, b.latitude, b.longitude))
@@ -253,10 +273,12 @@ async function searchGoogle(location: string, category: HospitalityCategory, api
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const location = searchParams.get('location')?.trim()
-  const category = (searchParams.get('category') || 'Restaurants') as HospitalityCategory
+  const requestedCategory = searchParams.get('category') || 'Restaurants'
+  const category = (VALID_CATEGORIES.has(requestedCategory as HospitalityCategory) ? requestedCategory : 'Restaurants') as HospitalityCategory
   const source = searchParams.get('source') || 'Google Maps'
 
   if (!location) return NextResponse.json({ error: 'Location is required' }, { status: 400 })
+  if (location.length > 160) return NextResponse.json({ error: 'Location must be 160 characters or fewer.' }, { status: 400 })
 
   if (source === 'Google Maps') {
     const googleApiKey = process.env.GCP_API_KEY || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY
@@ -299,9 +321,9 @@ export async function GET(request: Request) {
     }
 
     const results = new Map<string, TomTomResult>()
-    for (const term of searchTerms(category)) {
-      const termResults = await fetchAllPois(term, apiKey, position.lat, position.lon)
-      for (const item of termResults) {
+    const termResults = await Promise.all(searchTerms(category).map((term) => fetchAllPois(term, apiKey, position.lat, position.lon)))
+    for (const items of termResults) {
+      for (const item of items) {
         if (!item.id || !Number.isFinite(item.position?.lat) || !Number.isFinite(item.position?.lon)) continue
         const distance = distanceInMeters(position.lat, position.lon, Number(item.position!.lat), Number(item.position!.lon))
         if (distance <= SEARCH_RADIUS_METERS) results.set(item.id, item)
