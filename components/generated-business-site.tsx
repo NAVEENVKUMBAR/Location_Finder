@@ -16,9 +16,14 @@ function whatsappLink(phone: string | null, message: string) {
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
 }
 
-function hoursText(hours: Business['openingHours']) {
-  if (!hours) return 'Contact the business for current hours'
-  return Object.entries(hours).slice(0, 4).map(([day, value]) => `${day}: ${value.open}${value.close ? `–${value.close}` : ''}`).join(' · ')
+function validHours(hours: Business['openingHours']) {
+  if (!hours) return []
+
+  return Object.entries(hours).filter(([, value]) => value?.open && value?.close)
+}
+
+function formatDay(day: string) {
+  return day.slice(0, 3)
 }
 
 const palettes = [
@@ -41,6 +46,7 @@ export function GeneratedBusinessSite({ business }: { business: Business }) {
   const maps = business.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([business.name, business.address].filter(Boolean).join(', '))}`
   const names = business.photoNames?.length ? business.photoNames : business.photoName ? [business.photoName] : []
   const photos = useMemo(() => names.map((name) => `/api/place-photo?name=${encodeURIComponent(name)}`), [names])
+  const hours = useMemo(() => validHours(business.openingHours), [business.openingHours])
   const cover = photos[0] || `/api/place-photo?query=${encodeURIComponent([business.name, business.address, business.category].filter(Boolean).join(' '))}`
   const category = business.category.toLowerCase()
   const isStay = ['hotel', 'resort', 'lodge', 'homestay', 'guest house', 'hostel', 'pg'].some((value) => category.includes(value))
@@ -66,7 +72,7 @@ export function GeneratedBusinessSite({ business }: { business: Business }) {
 
     <section id="top" className="mx-auto max-w-7xl px-5 pt-5 sm:px-8 sm:pt-8"><div className="relative min-h-[600px] overflow-hidden rounded-[2rem] bg-[var(--ink)] sm:min-h-[700px]"><img src={cover} alt={`${business.name} featured view`} className="absolute inset-0 h-full w-full object-cover opacity-75" /><div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/20 to-transparent" /><div className="relative flex min-h-[600px] flex-col justify-end p-7 text-white sm:min-h-[700px] sm:p-14"><div className="mb-6 flex flex-wrap gap-2 text-xs font-semibold"><span className="rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur">{business.category}</span>{business.rating && <span className="flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur"><Star size={13} fill="currentColor" /> {business.rating} rating</span>}</div><p className="max-w-3xl font-serif text-5xl leading-[.95] sm:text-8xl">{label}.</p><p className="mt-6 max-w-xl text-base leading-7 text-white/80 sm:text-lg">{description}</p><div className="mt-8 flex flex-wrap gap-3"><a href="#contact" className="rounded-full bg-[var(--soft)] px-6 py-3.5 text-sm font-bold text-[var(--ink)] transition hover:bg-white">Make an enquiry <ArrowUpRight className="ml-1 inline" size={16} /></a>{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="rounded-full border border-white/35 px-6 py-3.5 text-sm font-bold transition hover:bg-white/10">Chat on WhatsApp</a>}</div></div></div></section>
 
-    <section id="details" className="mx-auto grid max-w-7xl gap-4 px-5 py-8 sm:grid-cols-3 sm:px-8 sm:py-12"><div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><MapPin className="text-[var(--accent)]" size={21} /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Find us</p><p className="mt-2 text-sm leading-6">{business.address || 'Address available through Google Maps'}</p></div><div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><Star className="text-[var(--accent)]" size={21} fill="currentColor" /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Guest rating</p><p className="mt-2 font-serif text-2xl">{business.rating ? `${business.rating} / 5` : 'Ask us directly'}</p></div><div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><Clock3 className="text-[var(--accent)]" size={21} /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Opening hours</p><p className="mt-2 text-sm leading-6">{hoursText(business.openingHours)}</p></div></section>
+    <section id="details" className={`mx-auto grid max-w-7xl gap-4 px-5 py-8 sm:px-8 sm:py-12 ${hours.length > 0 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}><div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><MapPin className="text-[var(--accent)]" size={21} /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Find us</p><p className="mt-2 text-sm leading-6">{business.address || 'Address available through Google Maps'}</p></div><div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><Star className="text-[var(--accent)]" size={21} fill="currentColor" /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Guest rating</p><p className="mt-2 font-serif text-2xl">{business.rating ? `${business.rating} / 5` : 'Ask us directly'}</p></div>{hours.length > 0 && <div className="rounded-2xl border border-[var(--line)] bg-white/60 p-6"><Clock3 className="text-[var(--accent)]" size={21} /><p className="mt-4 text-xs font-bold uppercase tracking-[.16em] opacity-60">Opening hours</p><div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">{hours.slice(0, 7).map(([day, value]) => <div key={day} className="flex items-center justify-between gap-2 border-b border-[var(--line)]/70 pb-2"><span className="font-medium">{formatDay(day)}</span><span className="text-right text-xs opacity-70">{value.open}–{value.close}</span></div>)}</div></div>}</section>
 
     <section id="story" className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[.75fr_1.25fr]"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[var(--accent)]">The experience</p><h2 className="mt-4 max-w-md font-serif text-5xl leading-tight sm:text-6xl">A place with its own point of view.</h2></div><div className="max-w-2xl text-lg leading-8 opacity-70"><p>{description} Every detail starts with the people behind {business.name} and a genuine understanding of what visitors need.</p><p className="mt-6">Reach out directly for current availability, services, pricing, and thoughtful recommendations for your visit.</p><a href="#contact" className="mt-8 inline-flex items-center border-b border-[var(--accent)] pb-1 text-sm font-bold text-[var(--accent)]">Start planning <ArrowUpRight className="ml-2" size={16} /></a></div></section>
 
