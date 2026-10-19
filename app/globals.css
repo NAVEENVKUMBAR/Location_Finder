@@ -127,6 +127,17 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
 .generated-site--service section[id="top"] > div { border-radius: 1rem 4rem 1rem 4rem; }
 .generated-site--service section[id="story"] { background: color-mix(in srgb, var(--wash) 55%, transparent); }
 .generated-site--service section[id="details"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.generated-contact-form { box-shadow: 0 24px 70px color-mix(in srgb, var(--ink) 18%, transparent); }
+.generated-contact-form input, .generated-contact-form textarea { border-radius: .85rem; transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease; }
+.generated-contact-form input:focus, .generated-contact-form textarea:focus { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent); }
+.generated-contact-form--stay { border-radius: 2rem 2rem .5rem 2rem; background: #18352f; }
+.generated-contact-form--stay input, .generated-contact-form--stay textarea { background: rgba(255,255,255,.08); border-color: rgba(214,231,220,.3); }
+.generated-contact-form--food { border-radius: .35rem; background: #201719; }
+.generated-contact-form--food input, .generated-contact-form--food textarea { border-radius: .25rem; background: #fffaf1; color: #201719; border-color: transparent; }
+.generated-contact-form--wellness { border-radius: 3rem; background: #4e5d50; }
+.generated-contact-form--wellness input, .generated-contact-form--wellness textarea { border-radius: 2rem; border-color: rgba(255,255,255,.35); }
+.generated-contact-form--service { border-radius: .75rem 2.5rem .75rem 2.5rem; background: #192b45; }
+.generated-contact-form--service input, .generated-contact-form--service textarea { border-radius: .35rem; }
 @media (max-width: 640px) {
   .generated-site--service section[id="details"] { grid-template-columns: 1fr; }
 }
