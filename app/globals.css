@@ -104,3 +104,29 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
 @media (max-width: 640px) {
   .results-table-scroll { max-height: 70vh; }
 }
+
+/* Generated business sites use a distinct visual system for each business category. */
+.generated-site { --site-display: Georgia, 'Times New Roman', serif; --site-body: Arial, Helvetica, sans-serif; font-family: var(--site-body); }
+.generated-site .font-serif { font-family: var(--site-display); }
+.generated-site--stay { --site-display: 'Iowan Old Style', Georgia, serif; --site-body: 'Avenir Next', Avenir, Arial, sans-serif; }
+.generated-site--stay header { letter-spacing: .01em; }
+.generated-site--stay section[id="top"] > div { border-radius: 3rem 3rem 1rem 1rem; }
+.generated-site--stay section[id="gallery"] { background: color-mix(in srgb, var(--wash) 78%, white); }
+.generated-site--food { --site-display: 'Arial Narrow', Impact, sans-serif; --site-body: 'Trebuchet MS', Arial, sans-serif; }
+.generated-site--food .font-serif { letter-spacing: -.045em; text-transform: uppercase; }
+.generated-site--food section[id="top"] > div { border-radius: .25rem; }
+.generated-site--food section[id="details"] > div { border-radius: .25rem; border-width: 2px; }
+.generated-site--food section[id="gallery"] { background: var(--ink); color: var(--soft); }
+.generated-site--food section[id="gallery"] img { filter: saturate(1.15) contrast(1.05); }
+.generated-site--wellness { --site-display: 'Iowan Old Style', Georgia, serif; --site-body: 'Gill Sans', 'Trebuchet MS', sans-serif; }
+.generated-site--wellness section[id="top"] > div { border-radius: 10rem 10rem 1.25rem 1.25rem; }
+.generated-site--wellness section[id="top"] img { filter: saturate(.72); }
+.generated-site--wellness section[id="details"] { max-width: 64rem; }
+.generated-site--wellness section[id="details"] > div { background: transparent; border-color: color-mix(in srgb, var(--accent) 42%, transparent); }
+.generated-site--service { --site-display: 'Baskerville', Georgia, serif; --site-body: Inter, Arial, sans-serif; }
+.generated-site--service section[id="top"] > div { border-radius: 1rem 4rem 1rem 4rem; }
+.generated-site--service section[id="story"] { background: color-mix(in srgb, var(--wash) 55%, transparent); }
+.generated-site--service section[id="details"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  .generated-site--service section[id="details"] { grid-template-columns: 1fr; }
+}
