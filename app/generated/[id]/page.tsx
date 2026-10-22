@@ -19,5 +19,5 @@ export default async function GeneratedWebsite({ params }: { params: Promise<{ i
   const { id } = await params
   const draft = await getDraft(id)
   if (!draft) notFound()
-  return <GeneratedBusinessSite business={draft.business} />
+  return <GeneratedBusinessSite business={draft.business} websiteId={id} />
 }

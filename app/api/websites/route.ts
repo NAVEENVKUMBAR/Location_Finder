@@ -9,6 +9,10 @@ function isBusiness(value: unknown): value is Business {
   return typeof business.id === 'string' && typeof business.name === 'string'
 }
 
+export function getDraft(id: string) {
+  return drafts.get(id)
+}
+
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null) as { business?: unknown } | null
   if (!body?.business || !isBusiness(body.business)) return NextResponse.json({ error: 'A valid business record is required.' }, { status: 400 })

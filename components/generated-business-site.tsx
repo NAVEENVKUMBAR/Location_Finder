@@ -36,7 +36,28 @@ const palettes = [
   { ink: '#33251e', accent: '#b96842', soft: '#f5e4d8', wash: '#eee3d9', line: '#dfd0c3' },
 ]
 
-export function GeneratedBusinessSite({ business }: { business: Business }) {
+export function GeneratedBusinessSite({ business, websiteId }: { business: Business; websiteId?: string }) {
+  const [exporting, setExporting] = useState(false)
+
+  async function downloadSource() {
+    if (!websiteId || exporting) return
+    setExporting(true)
+    try {
+      const response = await fetch(`/api/websites/${encodeURIComponent(websiteId)}/export`, { method: 'POST' })
+      if (!response.ok) throw new Error('Export failed')
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${business.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'business'}-website-source.zip`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+    } finally {
+      setExporting(false)
+    }
+  }
   const [menuOpen, setMenuOpen] = useState(false)
   const [activePhoto, setActivePhoto] = useState<number | null>(null)
   const [sent, setSent] = useState(false)
@@ -85,7 +106,7 @@ export function GeneratedBusinessSite({ business }: { business: Business }) {
 
     <section id="contact" className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[.8fr_1fr]"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[var(--accent)]">Let&apos;s talk</p><h2 className="mt-4 max-w-xl font-serif text-5xl leading-tight sm:text-6xl">{contactHeading}.</h2><p className="mt-6 max-w-xl text-base leading-7 opacity-70">{contactIntro} Prefer a faster reply? Use WhatsApp.</p><div className="mt-8 flex flex-wrap gap-3">{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-sm font-bold text-white">Chat on WhatsApp <ArrowUpRight size={16} /></a>}{phone && <a href={phone} className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] px-5 py-3 text-sm font-bold"><Phone size={16} /> Call now</a>}</div></div><form onSubmit={submitContact} className={`generated-contact-form generated-contact-form--${template} rounded-[1.5rem] bg-[var(--ink)] p-7 text-white sm:p-10`}><p className="text-sm text-white/60">Contact {business.name}</p><div className="mt-6 grid gap-4 sm:grid-cols-2"><label className="text-sm">Your name<input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-2 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-[var(--accent)]" placeholder="Full name" /></label><label className="text-sm">Phone or email<input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="mt-2 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-[var(--accent)]" placeholder="How should we reply?" /></label></div><label className="mt-4 block text-sm">Your message<textarea required rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="mt-2 w-full resize-none rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/40 focus:border-[var(--accent)]" placeholder="Tell us what you need..." /></label><button type="submit" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[var(--soft)] px-5 py-3.5 text-sm font-bold text-[var(--ink)] hover:bg-white"><Send size={16} /> Send enquiry</button>{sent && <p className="mt-4 flex items-center gap-2 text-sm text-white/70"><Check size={16} /> Your enquiry is ready to send.</p>}</form></section>
 
-    <footer className="border-t border-[var(--line)] px-5 py-8 sm:px-8"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs opacity-60 sm:flex-row"><span>© {new Date().getFullYear()} {business.name}. All rights reserved.</span><span>{business.category} · {business.address || 'Local business'}</span></div></footer>
+    <footer className="border-t border-[var(--line)] px-5 py-8 sm:px-8"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 text-xs opacity-60 sm:flex-row"><span>© {new Date().getFullYear()} {business.name}. All rights reserved.</span><span>{business.category} · {business.address || 'Local business'}</span><button type="button" onClick={downloadSource} disabled={!websiteId || exporting} className="font-semibold text-[var(--accent)] underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-50">{exporting ? 'Preparing source…' : 'Download source code'}</button></div></footer>
     {activePhoto !== null && photos[activePhoto] && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" role="dialog" aria-modal="true" aria-label="Photo viewer" onClick={() => setActivePhoto(null)}><button type="button" aria-label="Close photo viewer" onClick={() => setActivePhoto(null)} className="absolute right-5 top-5 rounded-full bg-white/10 p-3 text-white"><X size={22} /></button><img src={photos[activePhoto]} alt={`${business.name} gallery photo ${activePhoto + 1}`} className="max-h-[85vh] max-w-[90vw] rounded-xl object-contain" onClick={(event) => event.stopPropagation()} /></div>}
   </main>
 }
