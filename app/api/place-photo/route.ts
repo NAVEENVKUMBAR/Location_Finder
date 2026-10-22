@@ -26,9 +26,11 @@ export async function GET(request: Request) {
   const requestedName = params.get('name')
   const query = params.get('query')
   const name = requestedName || (query ? await resolvePhotoName(query, key) : null)
-  if (!name) return new NextResponse('Photo unavailable', { status: 404 })
+  if (!name || !name.startsWith('places/')) return new NextResponse('Photo unavailable', { status: 404 })
 
-  const response = await fetch(`https://places.googleapis.com/v1/${name}/media?maxWidthPx=1800&maxHeightPx=1100&skipHttpRedirect=true&key=${encodeURIComponent(key)}`, { cache: 'no-store' })
+  const response = await fetch(`https://places.googleapis.com/v1/${name}/media?maxWidthPx=1800&maxHeightPx=1100&skipHttpRedirect=true&key=${encodeURIComponent(key)}`, {
+    next: { revalidate: 3600 },
+  })
   if (!response.ok) return new NextResponse('Photo unavailable', { status: response.status })
   const payload = await response.json() as { photoUri?: string }
   if (!payload.photoUri) return new NextResponse('Photo unavailable', { status: 404 })

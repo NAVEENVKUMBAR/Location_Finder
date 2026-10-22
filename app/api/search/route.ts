@@ -159,7 +159,7 @@ async function googlePlacesSearch(textQuery: string, apiKey: string, latitude?: 
     }
     if (pageToken) body.pageToken = pageToken
     if (Number.isFinite(latitude) && Number.isFinite(longitude)) {
-      body.locationBias = { circle: { center: { latitude, longitude }, radius: SEARCH_RADIUS_METERS } }
+      body.locationBias = { circle: { center: { latitude, longitude }, radius } }
     }
 
     const response = await fetch(GOOGLE_PLACES_URL, {
