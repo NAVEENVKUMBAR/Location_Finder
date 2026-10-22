@@ -150,10 +150,33 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
   .generated-site--organic section[id="gallery"] { border-radius: 4rem 0 0 0; }
   .generated-site--bold section[id="top"] > div { border-radius: 0; }
   .generated-site--bold section[id="top"] p.font-serif { max-width: 8ch; font-size: clamp(3.5rem, 10vw, 8rem); text-transform: uppercase; }
+  .generated-site--magazine section[id="details"] { max-width: 80rem; grid-template-columns: 1.2fr .8fr 1fr; }
+  .generated-site--magazine section[id="story"] { max-width: 80rem; border-top: 10px solid var(--accent); }
+  .generated-site--magazine section[id="gallery"] { clip-path: polygon(0 3%, 100% 0, 100% 100%, 0 97%); }
+  .generated-site--architectural section[id="top"] > div { border-radius: 0; border: 1px solid var(--ink); }
+  .generated-site--architectural section[id="top"] > div > div:last-child { padding-left: 8%; }
+  .generated-site--floating section[id="details"] { position: relative; z-index: 2; margin-top: -4rem; }
+  .generated-site--floating section[id="details"] > div { box-shadow: 0 20px 50px color-mix(in srgb, var(--ink) 14%, transparent); }
+  .generated-site--gallery section[id="top"] > div { margin-inline: -2rem; border-radius: 0 0 3rem 0; }
+  .generated-site--gallery section[id="gallery"] { padding-top: 6rem; }
+  .generated-site--minimal section[id="story"] { max-width: 64rem; text-align: center; display: block; }
+  .generated-site--minimal section[id="story"] > div { margin-inline: auto; }
+  .generated-site--luxury header { border-bottom-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+  .generated-site--luxury section[id="top"] > div { border-radius: 0; }
+  .generated-site--luxury section[id="top"] p.font-serif { letter-spacing: -.03em; }
+  .generated-site--nav-editorial header nav { font-family: var(--site-display); letter-spacing: .08em; text-transform: uppercase; font-size: .7rem; }
+  .generated-site--nav-utility header { border-bottom-width: 3px; }
+  .generated-site--radius-sharp section[id="details"] > div { border-radius: .25rem; }
+  .generated-site--radius-organic section[id="details"] > div { border-radius: 2rem .5rem 2rem .5rem; }
+  @media (prefers-reduced-motion: reduce) {
+    .generated-site *, .generated-site *::before, .generated-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
   @media (max-width: 640px) {
-    .generated-site--service section[id="details"] { grid-template-columns: 1fr; }
+    .generated-site--service section[id="details"], .generated-site--magazine section[id="details"] { grid-template-columns: 1fr; }
     .generated-site--cinematic section[id="top"] > div,
     .generated-site--cinematic section[id="top"] > div > div:last-child { min-height: 600px; }
+    .generated-site--gallery section[id="top"] > div { margin-inline: 0; }
+    .generated-site--floating section[id="details"] { margin-top: 0; }
     .generated-site--bold section[id="top"] p.font-serif { font-size: 3.8rem; }
   }
 
