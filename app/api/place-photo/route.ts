@@ -28,7 +28,13 @@ export async function GET(request: Request) {
   const name = requestedName || (query ? await resolvePhotoName(query, key) : null)
   if (!name || !name.startsWith('places/')) return new NextResponse('Photo unavailable', { status: 404 })
 
-  const response = await fetch(`https://places.googleapis.com/v1/${name}/media?maxWidthPx=1800&maxHeightPx=1100&skipHttpRedirect=true&key=${encodeURIComponent(key)}`, {
+  const mediaUrl = new URL(`https://places.googleapis.com/v1/${name}/media`)
+  mediaUrl.searchParams.set('maxWidthPx', params.get('maxWidthPx') || '1800')
+  mediaUrl.searchParams.set('maxHeightPx', params.get('maxHeightPx') || '1100')
+  mediaUrl.searchParams.set('skipHttpRedirect', 'true')
+
+  const response = await fetch(mediaUrl, {
+    headers: { 'X-Goog-Api-Key': key },
     next: { revalidate: 3600 },
   })
   if (!response.ok) return new NextResponse('Photo unavailable', { status: response.status })
