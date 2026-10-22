@@ -138,6 +138,22 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
 .generated-contact-form--wellness input, .generated-contact-form--wellness textarea { border-radius: 2rem; border-color: rgba(255,255,255,.35); }
 .generated-contact-form--service { border-radius: .75rem 2.5rem .75rem 2.5rem; background: #192b45; }
 .generated-contact-form--service input, .generated-contact-form--service textarea { border-radius: .35rem; }
-@media (max-width: 640px) {
-  .generated-site--service section[id="details"] { grid-template-columns: 1fr; }
-}
+  .generated-site--editorial section[id="story"] { grid-template-columns: .9fr 1.1fr; }
+  .generated-site--editorial section[id="top"] > div { box-shadow: 18px 18px 0 color-mix(in srgb, var(--accent) 20%, transparent); }
+  .generated-site--cinematic section[id="top"] > div { min-height: 760px; border-radius: .75rem; }
+  .generated-site--cinematic section[id="top"] > div > div:last-child { min-height: 760px; padding-bottom: 5rem; }
+  .generated-site--architectural section[id="details"] > div { border-radius: 0; background: transparent; }
+  .generated-site--architectural section[id="story"] { border-block: 1px solid var(--line); }
+  .generated-site--minimal section[id="top"] > div { background: var(--soft); border: 1px solid var(--line); }
+  .generated-site--minimal section[id="top"] > div > img { opacity: .42; mix-blend-mode: multiply; }
+  .generated-site--organic section[id="top"] > div { border-radius: 5rem 1rem 5rem 1rem; }
+  .generated-site--organic section[id="gallery"] { border-radius: 4rem 0 0 0; }
+  .generated-site--bold section[id="top"] > div { border-radius: 0; }
+  .generated-site--bold section[id="top"] p.font-serif { max-width: 8ch; font-size: clamp(3.5rem, 10vw, 8rem); text-transform: uppercase; }
+  @media (max-width: 640px) {
+    .generated-site--service section[id="details"] { grid-template-columns: 1fr; }
+    .generated-site--cinematic section[id="top"] > div,
+    .generated-site--cinematic section[id="top"] > div > div:last-child { min-height: 600px; }
+    .generated-site--bold section[id="top"] p.font-serif { font-size: 3.8rem; }
+  }
+

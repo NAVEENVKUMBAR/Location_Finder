@@ -34,7 +34,11 @@ const palettes = [
   { ink: '#2b193f', accent: '#c96983', soft: '#f8e5e8', wash: '#eee7f5', line: '#dfd3e6' },
   { ink: '#172b4d', accent: '#d7a84b', soft: '#f5ecd2', wash: '#e3edf5', line: '#d1dce7' },
   { ink: '#33251e', accent: '#b96842', soft: '#f5e4d8', wash: '#eee3d9', line: '#dfd0c3' },
+  { ink: '#173b43', accent: '#d68059', soft: '#f4e9dc', wash: '#dcebed', line: '#cbdedc' },
+  { ink: '#262626', accent: '#8d9b72', soft: '#f1f0e9', wash: '#e4e7dc', line: '#d3d8c8' },
 ]
+
+const designDirections = ['editorial', 'cinematic', 'architectural', 'minimal', 'organic', 'bold'] as const
 
 export function GeneratedBusinessSite({ business, websiteId }: { business: Business; websiteId?: string }) {
   const [exporting, setExporting] = useState(false)
@@ -62,10 +66,13 @@ export function GeneratedBusinessSite({ business, websiteId }: { business: Busin
   const [activePhoto, setActivePhoto] = useState<number | null>(null)
   const [sent, setSent] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '', message: '' })
-  const theme = useMemo(() => {
-    const index = [...business.id].reduce((sum, char) => sum + char.charCodeAt(0), 0) % palettes.length
-    return palettes[index]
-  }, [business.id])
+  const design = useMemo(() => {
+    const fingerprint = [...`${business.id}:${business.category}:${business.name}`].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+    const paletteIndex = fingerprint % palettes.length
+    const direction = designDirections[fingerprint % designDirections.length]
+    return { theme: palettes[paletteIndex], direction, fingerprint }
+  }, [business.id, business.category, business.name])
+  const theme = design.theme
   const phone = phoneLink(business.phone)
   const maps = business.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([business.name, business.address].filter(Boolean).join(', '))}`
   const names = business.photoNames?.length ? business.photoNames : business.photoName ? [business.photoName] : []
@@ -93,7 +100,7 @@ export function GeneratedBusinessSite({ business, websiteId }: { business: Busin
     setSent(true)
   }
 
-  return <main data-template={template} style={{ '--ink': theme.ink, '--accent': theme.accent, '--soft': theme.soft, '--wash': theme.wash, '--line': theme.line } as React.CSSProperties} className={`generated-site generated-site--${template} min-h-screen overflow-hidden bg-[var(--soft)] text-[var(--ink)]`}>
+  return <main data-template={template} style={{ '--ink': theme.ink, '--accent': theme.accent, '--soft': theme.soft, '--wash': theme.wash, '--line': theme.line } as React.CSSProperties} className={`generated-site generated-site--${template} generated-site--${design.direction} min-h-screen overflow-hidden bg-[var(--soft)] text-[var(--ink)]`}>
     <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--soft)]/90 backdrop-blur-xl"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8"><a href="#top" onClick={() => setMenuOpen(false)} className="min-w-0"><span className="block truncate font-serif text-2xl leading-none">{business.name}</span><span className="mt-1 block text-[10px] font-bold uppercase tracking-[.22em] text-[var(--accent)]">{business.category}</span></a><nav className="hidden items-center gap-7 text-sm md:flex" aria-label="Main navigation"><a href="#story">About</a>{photos.length > 0 && <a href="#gallery">Gallery</a>}<a href="#details">Visit</a><a href="#contact">Contact</a></nav><div className="flex items-center gap-2">{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="hidden rounded-full bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white sm:inline-flex">WhatsApp us</a>}<button type="button" aria-label="Open menu" className="rounded-full border border-[var(--line)] p-2 md:hidden" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button></div></div>{menuOpen && <nav className="border-t border-[var(--line)] px-5 py-4 md:hidden"><div className="flex flex-col gap-4 text-sm"><a href="#story">About</a><a href="#gallery">Gallery</a><a href="#details">Visit</a><a href="#contact">Contact</a></div></nav>}</header>
 
     <section id="top" className="mx-auto max-w-7xl px-5 pt-5 sm:px-8 sm:pt-8"><div className="relative min-h-[600px] overflow-hidden rounded-[2rem] bg-[var(--ink)] sm:min-h-[700px]">{cover ? <img src={cover} alt={`${business.name} verified listing photo`} className="absolute inset-0 h-full w-full object-cover opacity-75" /> : <div aria-hidden="true" className="absolute inset-0 bg-[var(--ink)]"><div className="absolute -right-20 -top-24 h-96 w-96 rounded-full bg-[var(--accent)]/30 blur-3xl" /><div className="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-[var(--wash)]/20 blur-3xl" /></div>}<div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/20 to-transparent" /><div className="relative flex min-h-[600px] flex-col justify-end p-7 text-white sm:min-h-[700px] sm:p-14"><div className="mb-6 flex flex-wrap gap-2 text-xs font-semibold"><span className="rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur">{business.category}</span>{business.rating && <span className="flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur"><Star size={13} fill="currentColor" /> {business.rating} rating</span>}</div><p className="max-w-3xl font-serif text-5xl leading-[.95] sm:text-8xl">{label}.</p><p className="mt-6 max-w-xl text-base leading-7 text-white/80 sm:text-lg">{description}</p><div className="mt-8 flex flex-wrap gap-3"><a href="#contact" className="rounded-full bg-[var(--soft)] px-6 py-3.5 text-sm font-bold text-[var(--ink)] transition hover:bg-white">Make an enquiry <ArrowUpRight className="ml-1 inline" size={16} /></a>{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="rounded-full border border-white/35 px-6 py-3.5 text-sm font-bold transition hover:bg-white/10">Chat on WhatsApp</a>}</div></div></div></section>
