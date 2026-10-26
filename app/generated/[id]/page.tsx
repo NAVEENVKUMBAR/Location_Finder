@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import type { Business } from '@/lib/types'
-import { GeneratedBusinessSite } from '@/components/generated-business-site'
+import { GeneratedWebsiteClient } from '@/components/generated-website-client'
 
 export const metadata: Metadata = {
   title: 'Business website | Sthala',
@@ -17,9 +17,9 @@ async function getDraft(id: string): Promise<{ business: Business; uploadedImage
   return response.json()
 }
 
-export default async function GeneratedWebsite({ params }: { params: Promise<{ id: string }> }) {
+export default async function GeneratedWebsite({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ view?: string }> }) {
   const { id } = await params
+  const { view } = await searchParams
   const draft = await getDraft(id)
-  if (!draft) notFound()
-  return <GeneratedBusinessSite business={draft.business} websiteId={id} uploadedImages={draft.uploadedImages} />
+  return <GeneratedWebsiteClient id={id} initialDraft={draft} showSourceDownload={view === '1'} />
 }

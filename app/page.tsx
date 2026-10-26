@@ -248,8 +248,11 @@ function ProfessionalWebsite({ business, onClose }: { business: Business; onClos
     setIsCreatingSite(true);
     try {
       const response = await fetch('/api/websites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business, uploadedImages }) });
-      const payload = await response.json() as { url?: string };
-      if (response.ok && payload.url) setSiteUrl(payload.url);
+const payload = await response.json() as { id?: string; url?: string };
+  if (response.ok && payload.url && payload.id) {
+    try { window.localStorage.setItem(`sthala:website:${payload.id}`, JSON.stringify({ business, uploadedImages })); } catch { /* Storage may be unavailable in private browsing. */ }
+    setSiteUrl(`${payload.url}?view=1`);
+  }
     } finally {
       setIsCreatingSite(false);
     }

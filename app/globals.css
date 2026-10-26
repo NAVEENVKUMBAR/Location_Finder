@@ -168,6 +168,14 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
   .generated-site--nav-utility header { border-bottom-width: 3px; }
   .generated-site--radius-sharp section[id="details"] > div { border-radius: .25rem; }
   .generated-site--radius-organic section[id="details"] > div { border-radius: 2rem .5rem 2rem .5rem; }
+.generated-site--cinematic section[id="top"] > div::before,
+.generated-site--editorial section[id="top"] > div::before { content: ''; position: absolute; inset: 12% auto auto 8%; width: 42%; height: 72%; border: 1px solid color-mix(in srgb, var(--accent) 60%, white); opacity: .55; mix-blend-mode: screen; transform: rotate(-7deg); pointer-events: none; }
+.generated-site--cinematic section[id="top"] > div::after,
+.generated-site--gallery section[id="top"] > div::after { content: ''; position: absolute; right: 7%; top: 9%; width: 18rem; height: 18rem; border-radius: 50%; background: color-mix(in srgb, var(--accent) 30%, transparent); filter: blur(1px); mix-blend-mode: screen; opacity: .55; pointer-events: none; }
+.generated-site--magazine section[id="top"] > div { box-shadow: 14px 14px 0 color-mix(in srgb, var(--accent) 34%, transparent); }
+.generated-site--luxury section[id="top"] > div::before { content: ''; position: absolute; inset: 1.25rem; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); pointer-events: none; z-index: 1; }
+.generated-site--gallery section[id="gallery"] { background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%); }
+.generated-site--bold section[id="top"] > div::after { content: ''; position: absolute; inset: auto 8% 10% auto; width: 9rem; height: 9rem; border: 18px solid color-mix(in srgb, var(--accent) 70%, transparent); transform: rotate(18deg); mix-blend-mode: screen; pointer-events: none; }
   @media (prefers-reduced-motion: reduce) {
     .generated-site *, .generated-site *::before, .generated-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
   }
