@@ -30,7 +30,9 @@ function formatDay(day: string) {
   return day.slice(0, 3)
 }
 
-export function GeneratedBusinessSite({ business, websiteId }: { business: Business; websiteId?: string }) {
+type UploadedImage = { name: string; dataUrl: string }
+
+export function GeneratedBusinessSite({ business, websiteId, uploadedImages = [] }: { business: Business; websiteId?: string; uploadedImages?: UploadedImage[] }) {
   const [exporting, setExporting] = useState(false)
 
   async function downloadSource() {
@@ -61,7 +63,7 @@ export function GeneratedBusinessSite({ business, websiteId }: { business: Busin
   const phone = phoneLink(business.phone)
   const maps = business.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([business.name, business.address].filter(Boolean).join(', '))}`
   const names = business.photoNames?.length ? business.photoNames : business.photoName ? [business.photoName] : []
-  const photos = useMemo(() => names.map((name) => `/api/place-photo?name=${encodeURIComponent(name)}`), [names])
+  const photos = useMemo(() => [...uploadedImages.map((image) => image.dataUrl), ...names.map((name) => `/api/place-photo?name=${encodeURIComponent(name)}`)], [names, uploadedImages])
   const hours = useMemo(() => validHours(business.openingHours), [business.openingHours])
   const cover = photos[0]
   const category = business.category.toLowerCase()
