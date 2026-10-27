@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import type { Business } from '@/lib/types'
 
 type UploadedImage = { name: string; dataUrl: string }
-const drafts = new Map<string, { business: Business; createdAt: string; uploadedImages?: UploadedImage[] }>()
+type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[] }
+const drafts = new Map<string, { business: Business; createdAt: string; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign }>()
 
 function isBusiness(value: unknown): value is Business {
   if (!value || typeof value !== 'object') return false
@@ -15,7 +16,7 @@ export function getDraft(id: string) {
 }
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => null) as { business?: unknown; uploadedImages?: UploadedImage[] } | null
+  const body = await request.json().catch(() => null) as { business?: unknown; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign } | null
   if (!body?.business || !isBusiness(body.business)) return NextResponse.json({ error: 'A valid business record is required.' }, { status: 400 })
   const phoneDigits = typeof body.business.phone === 'string' ? body.business.phone.replace(/\D/g, '') : ''
   if (phoneDigits.length < 8) return NextResponse.json({ error: 'Website generation requires a verified business phone number for calls and WhatsApp.' }, { status: 422 })
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
   const uploadedImages = Array.isArray(body.uploadedImages)
     ? body.uploadedImages.filter((image): image is UploadedImage => Boolean(image && typeof image.name === 'string' && typeof image.dataUrl === 'string' && image.dataUrl.startsWith('data:image/'))).slice(0, 24)
     : undefined
-  drafts.set(id, { business: body.business, createdAt: new Date().toISOString(), uploadedImages })
+  drafts.set(id, { business: body.business, createdAt: new Date().toISOString(), uploadedImages, aiDesign: body.aiDesign })
   return NextResponse.json({ id, url: `/generated/${encodeURIComponent(id)}` }, { status: 201 })
 }
 

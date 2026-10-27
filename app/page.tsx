@@ -247,10 +247,12 @@ function ProfessionalWebsite({ business, onClose }: { business: Business; onClos
   const createStandaloneSite = async () => {
     setIsCreatingSite(true);
     try {
-      const response = await fetch('/api/websites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business, uploadedImages }) });
+      const aiResponse = await fetch('/api/website-design', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business }) });
+      const aiPayload = aiResponse.ok ? await aiResponse.json() as { design?: unknown } : { design: undefined };
+      const response = await fetch('/api/websites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business, uploadedImages, aiDesign: aiPayload.design }) });
 const payload = await response.json() as { id?: string; url?: string };
   if (response.ok && payload.url && payload.id) {
-    try { window.localStorage.setItem(`sthala:website:${payload.id}`, JSON.stringify({ business, uploadedImages })); } catch { /* Storage may be unavailable in private browsing. */ }
+    try { window.localStorage.setItem(`sthala:website:${payload.id}`, JSON.stringify({ business, uploadedImages, aiDesign: aiPayload.design })); } catch { /* Storage may be unavailable in private browsing. */ }
     setSiteUrl(`${payload.url}?view=1`);
   }
     } finally {
