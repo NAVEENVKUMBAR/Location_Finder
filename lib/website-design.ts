@@ -1,6 +1,7 @@
 import type { Business } from '@/lib/types'
 
 export type LayoutFamily = 'cinematic' | 'editorial' | 'magazine' | 'architectural' | 'floating' | 'gallery' | 'minimal' | 'bold' | 'luxury'
+export type CategoryFamily = 'cafe' | 'restaurant' | 'stay' | 'wellness' | 'service'
 
 export interface WebsiteDesign {
   layout: LayoutFamily
@@ -23,12 +24,32 @@ const designs: WebsiteDesign[] = [
   { layout: 'luxury', palette: { ink: '#33251e', accent: '#bd995c', soft: '#f3eee5', wash: '#e5ded2', line: '#d6c8b4' }, displayFont: "'Bodoni 72', Didot, Georgia, serif", bodyFont: "'Avenir Next', Avenir, Arial, sans-serif", navigation: 'editorial', radius: 'soft' },
 ]
 
+const categoryPools: Record<CategoryFamily, LayoutFamily[]> = {
+  cafe: ['magazine', 'gallery', 'bold', 'editorial'],
+  restaurant: ['editorial', 'cinematic', 'luxury', 'magazine'],
+  stay: ['cinematic', 'floating', 'architectural', 'luxury', 'gallery'],
+  wellness: ['minimal', 'floating', 'editorial', 'luxury'],
+  service: ['architectural', 'minimal', 'bold', 'magazine'],
+}
+
 function hash(value: string) {
   return [...value].reduce((total, character) => (total * 31 + character.charCodeAt(0)) >>> 0, 7)
 }
 
-export function selectWebsiteDesign(business: Pick<Business, 'id' | 'name' | 'category' | 'photoName'>): WebsiteDesign & { fingerprint: string } {
+function categoryFamily(category: string): CategoryFamily {
+  const value = category.toLowerCase()
+  if (value.includes('cafe') || value.includes('café')) return 'cafe'
+  if (value.includes('restaurant')) return 'restaurant'
+  if (['hotel', 'resort', 'lodge', 'homestay', 'guest house', 'hostel', 'pg'].some((item) => value.includes(item))) return 'stay'
+  if (['spa', 'wellness', 'ayur', 'salon', 'fitness', 'yoga'].some((item) => value.includes(item))) return 'wellness'
+  return 'service'
+}
+
+export function selectWebsiteDesign(business: Pick<Business, 'id' | 'name' | 'category' | 'photoName'>): WebsiteDesign & { fingerprint: string; categoryFamily: CategoryFamily } {
   const fingerprint = hash(`${business.id}:${business.name}:${business.category}:${business.photoName ?? ''}`)
-  const design = designs[fingerprint % designs.length]
-  return { ...design, fingerprint: `${business.category}-${fingerprint.toString(36)}` }
+  const family = categoryFamily(business.category)
+  const pool = categoryPools[family]
+  const layout = pool[fingerprint % pool.length]
+  const design = designs.find((item) => item.layout === layout) ?? designs[0]
+  return { ...design, fingerprint: `${family}-${fingerprint.toString(36)}`, categoryFamily: family }
 }

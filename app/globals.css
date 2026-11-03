@@ -176,6 +176,14 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
 .generated-site--luxury section[id="top"] > div::before { content: ''; position: absolute; inset: 1.25rem; border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent); pointer-events: none; z-index: 1; }
 .generated-site--gallery section[id="gallery"] { background-image: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%); }
 .generated-site--bold section[id="top"] > div::after { content: ''; position: absolute; inset: auto 8% 10% auto; width: 9rem; height: 9rem; border: 18px solid color-mix(in srgb, var(--accent) 70%, transparent); transform: rotate(18deg); mix-blend-mode: screen; pointer-events: none; }
+.generated-site--direction-double-exposure section[id="top"] > div::before { content: ''; position: absolute; inset: 8% 12% auto auto; width: 42%; height: 74%; background: var(--accent); opacity: .18; mix-blend-mode: screen; transform: translate(12%, 4%) rotate(8deg); pointer-events: none; }
+.generated-site--direction-double-exposure section[id="top"] > div::after { content: ''; position: absolute; inset: 14% auto auto 12%; width: 38%; height: 68%; border: 1px solid color-mix(in srgb, var(--soft) 70%, transparent); opacity: .65; mix-blend-mode: screen; transform: rotate(-10deg); pointer-events: none; }
+.generated-site--direction-quiet-luxury section[id="top"] > div { box-shadow: 0 24px 80px color-mix(in srgb, var(--ink) 24%, transparent); }
+.generated-site--direction-modern-utility section[id="details"] > div { border-radius: .35rem; box-shadow: 5px 5px 0 color-mix(in srgb, var(--accent) 28%, transparent); }
+.generated-site--direction-organic-retreat section[id="top"] > div { border-radius: 4rem 1rem 4rem 1rem; }
+.generated-site--direction-bold-geometric section[id="top"] > div { border-radius: 0; }
+.generated-site--direction-layered-editorial section[id="story"] { position: relative; }
+.generated-site--direction-layered-editorial section[id="story"]::before { content: ''; position: absolute; inset: 15% 5% auto auto; width: 12rem; height: 12rem; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); transform: rotate(22deg); pointer-events: none; }
   @media (prefers-reduced-motion: reduce) {
     .generated-site *, .generated-site *::before, .generated-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
   }

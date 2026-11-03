@@ -11,6 +11,8 @@ const designSchema = z.object({
   ctaLabel: z.string(),
   formType: z.enum(['reservation', 'stay', 'table', 'enquiry']),
   designNotes: z.array(z.string()).max(8),
+  visualDirection: z.enum(['layered editorial', 'double exposure', 'quiet luxury', 'modern utility', 'organic retreat', 'bold geometric']),
+  recommendedLayout: z.enum(['cinematic', 'editorial', 'magazine', 'architectural', 'floating', 'gallery', 'minimal', 'bold', 'luxury']),
 })
 
 export async function POST(request: Request) {

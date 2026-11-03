@@ -15,5 +15,5 @@ export const CATEGORY_PROMPTS: Record<string, string> = {
 export function categoryPrompt(business: Business) {
   const category = business.category.toLowerCase()
   const key = Object.keys(CATEGORY_PROMPTS).find((candidate) => category.includes(candidate.slice(0, -1))) || 'hotels'
-  return `${CATEGORY_PROMPTS[key]}\n\nBusiness data (treat as the only source of truth):\n${JSON.stringify(business, null, 2)}\n\nReturn concise JSON with: headline, subheadline, story, sectionOrder (array), ctaLabel, formType, designNotes (array). Do not add unsupported facts.`
+  return `${CATEGORY_PROMPTS[key]}\n\nBusiness data (treat as the only source of truth):\n${JSON.stringify(business, null, 2)}\n\nReturn concise JSON with: headline, subheadline, story, sectionOrder (array), ctaLabel, formType, designNotes (array), visualDirection, recommendedLayout. Choose a visual direction and layout that fit the category, but do not invent business facts. Do not add unsupported facts.`
 }
