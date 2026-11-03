@@ -29,7 +29,7 @@ function projectFiles(business: Business, imageFiles: string[]) {
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const draft = getDraft(id)
+  const draft = await getDraft(id)
   if (!draft) return NextResponse.json({ error: 'Website draft not found.' }, { status: 404 })
   const zip = JSZip()
   const imageFiles: string[] = []

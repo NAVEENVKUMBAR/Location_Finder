@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { Business } from '@/lib/types'
+import { db } from '@/lib/db'
+import { generatedWebsites } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
 type UploadedImage = { name: string; dataUrl: string }
 type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[] }
-const drafts = new Map<string, { business: Business; createdAt: string; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign }>()
+
 
 function isBusiness(value: unknown): value is Business {
   if (!value || typeof value !== 'object') return false
@@ -11,8 +14,10 @@ function isBusiness(value: unknown): value is Business {
   return typeof business.id === 'string' && typeof business.name === 'string'
 }
 
-export function getDraft(id: string) {
-  return drafts.get(id)
+export async function getDraft(id: string) {
+  const [draft] = await db.select().from(generatedWebsites).where(eq(generatedWebsites.id, id)).limit(1)
+  if (!draft) return null
+  return { business: draft.business as Business, uploadedImages: (draft.uploadedImages ?? undefined) as UploadedImage[] | undefined, aiDesign: draft.aiDesign as AIDesign | undefined, createdAt: draft.createdAt.toISOString() }
 }
 
 export async function POST(request: Request) {
@@ -24,13 +29,13 @@ export async function POST(request: Request) {
   const uploadedImages = Array.isArray(body.uploadedImages)
     ? body.uploadedImages.filter((image): image is UploadedImage => Boolean(image && typeof image.name === 'string' && typeof image.dataUrl === 'string' && image.dataUrl.startsWith('data:image/'))).slice(0, 24)
     : undefined
-  drafts.set(id, { business: body.business, createdAt: new Date().toISOString(), uploadedImages, aiDesign: body.aiDesign })
+  await db.insert(generatedWebsites).values({ id, business: body.business, uploadedImages, aiDesign: body.aiDesign, createdAt: new Date() })
   return NextResponse.json({ id, url: `/generated/${encodeURIComponent(id)}` }, { status: 201 })
 }
 
 export async function GET(request: Request) {
   const id = new URL(request.url).searchParams.get('id')
-  const draft = id ? drafts.get(id) : null
+  const draft = id ? await getDraft(id) : null
   if (!draft) return NextResponse.json({ error: 'Website draft not found.' }, { status: 404 })
   return NextResponse.json(draft)
 }
