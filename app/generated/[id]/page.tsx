@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import type { Business } from '@/lib/types'
 import { GeneratedWebsiteClient } from '@/components/generated-website-client'
+import { getDraft } from '@/app/api/websites/route'
 
 export const metadata: Metadata = {
   title: 'Business website | Sthala',
@@ -11,12 +12,6 @@ export const metadata: Metadata = {
 
 type UploadedImage = { name: string; dataUrl: string }
 type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[] }
-
-async function getDraft(id: string): Promise<{ business: Business; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign } | null> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/websites?id=${encodeURIComponent(id)}`, { cache: 'no-store' }).catch(() => null)
-  if (!response?.ok) return null
-  return response.json()
-}
 
 export default async function GeneratedWebsite({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ view?: string }> }) {
   const { id } = await params
