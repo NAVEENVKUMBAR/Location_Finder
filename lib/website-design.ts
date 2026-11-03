@@ -45,11 +45,21 @@ function categoryFamily(category: string): CategoryFamily {
   return 'service'
 }
 
-export function selectWebsiteDesign(business: Pick<Business, 'id' | 'name' | 'category' | 'photoName'>): WebsiteDesign & { fingerprint: string; categoryFamily: CategoryFamily } {
+export function selectWebsiteDesign(
+  business: Pick<Business, 'id' | 'name' | 'category' | 'photoName'>,
+  preferredLayout?: string,
+): WebsiteDesign & { fingerprint: string; categoryFamily: CategoryFamily; variant: number } {
   const fingerprint = hash(`${business.id}:${business.name}:${business.category}:${business.photoName ?? ''}`)
   const family = categoryFamily(business.category)
   const pool = categoryPools[family]
-  const layout = pool[fingerprint % pool.length]
+  const layout = pool.includes(preferredLayout as LayoutFamily) ? preferredLayout as LayoutFamily : pool[fingerprint % pool.length]
   const design = designs.find((item) => item.layout === layout) ?? designs[0]
-  return { ...design, fingerprint: `${family}-${fingerprint.toString(36)}`, categoryFamily: family }
+  const variant = (fingerprint >>> 5) % 3
+  const paletteVariants = [
+    { accent: design.palette.accent, wash: design.palette.wash },
+    { accent: design.palette.ink, wash: design.palette.soft },
+    { accent: design.palette.accent, wash: design.palette.line },
+  ]
+  const colors = paletteVariants[variant]
+  return { ...design, palette: { ...design.palette, ...colors }, fingerprint: `${family}-${fingerprint.toString(36)}`, categoryFamily: family, variant }
 }

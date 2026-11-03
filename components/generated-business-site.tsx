@@ -59,7 +59,7 @@ export function GeneratedBusinessSite({ business, websiteId, uploadedImages = []
   const [activePhoto, setActivePhoto] = useState<number | null>(null)
   const [sent, setSent] = useState(false)
   const [form, setForm] = useState({ name: '', phone: '', message: '', details: {} as Record<string, string> })
-  const design = useMemo(() => selectWebsiteDesign(business), [business])
+  const design = useMemo(() => selectWebsiteDesign(business, aiDesign?.recommendedLayout), [business, aiDesign?.recommendedLayout])
   const theme = design.palette
   const phone = phoneLink(business.phone)
   const maps = business.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([business.name, business.address].filter(Boolean).join(', '))}`
