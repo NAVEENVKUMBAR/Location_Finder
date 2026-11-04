@@ -183,7 +183,20 @@ button, a { transition: color 150ms ease, background-color 150ms ease, border-co
 .generated-site--direction-organic-retreat section[id="top"] > div { border-radius: 4rem 1rem 4rem 1rem; }
 .generated-site--direction-bold-geometric section[id="top"] > div { border-radius: 0; }
 .generated-site--direction-layered-editorial section[id="story"] { position: relative; }
-.generated-site--direction-layered-editorial section[id="story"]::before { content: ''; position: absolute; inset: 15% 5% auto auto; width: 12rem; height: 12rem; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); transform: rotate(22deg); pointer-events: none; }
+  .generated-site--direction-layered-editorial section[id="story"]::before { content: ''; position: absolute; inset: 15% 5% auto auto; width: 12rem; height: 12rem; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); transform: rotate(22deg); pointer-events: none; }
+  .generated-site--variant-0 section[id="top"] > div { border-radius: 3rem .5rem 3rem .5rem; }
+  .generated-site--variant-1 section[id="top"] > div { border-radius: .5rem 3rem .5rem 3rem; transform: translateY(.5rem); }
+  .generated-site--variant-2 section[id="top"] > div { border-radius: 0 4rem 0 1rem; }
+  .generated-site--variant-3 section[id="top"] > div { border-radius: 1rem 0 4rem 0; box-shadow: -12px 18px 0 color-mix(in srgb, var(--accent) 22%, transparent); }
+  .generated-site--variant-4 section[id="story"] { border-left: 3px solid var(--accent); padding-left: 2rem; }
+  .generated-site--variant-5 section[id="story"] { border-top: 1px solid var(--accent); padding-top: 3rem; }
+  .generated-site--variant-6 section[id="details"] > div { border-radius: 0; border-top: 4px solid var(--accent); }
+  .generated-site--variant-7 section[id="details"] > div { border-radius: 2.5rem; transform: rotate(-.6deg); }
+  .generated-site--variant-8 section[id="gallery"] img:first-child { border-radius: 4rem 0 0 0; }
+  .generated-site--variant-9 section[id="gallery"] img:last-child { border-radius: 0 0 4rem 0; }
+  .generated-site--variant-10 section[id="top"] > div { outline: 1px solid var(--accent); outline-offset: .75rem; }
+  .generated-site--variant-11 section[id="top"] > div { filter: saturate(1.12); box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--ink) 14%, transparent); }
+
   @media (prefers-reduced-motion: reduce) {
     .generated-site *, .generated-site *::before, .generated-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
   }
