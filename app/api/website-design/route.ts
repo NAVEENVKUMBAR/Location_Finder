@@ -13,6 +13,8 @@ const designSchema = z.object({
   designNotes: z.array(z.string()).max(8),
   visualDirection: z.enum(['layered editorial', 'double exposure', 'quiet luxury', 'modern utility', 'organic retreat', 'bold geometric']),
   recommendedLayout: z.enum(['cinematic', 'editorial', 'magazine', 'architectural', 'floating', 'gallery', 'minimal', 'bold', 'luxury']),
+  colorSystem: z.enum(['coffee-oat', 'burgundy-cream', 'olive-linen', 'navy-champagne', 'teal-brass', 'amber-slate', 'forest-sand', 'lavender-slate', 'terracotta-charcoal']),
+  typeMood: z.enum(['serif editorial', 'warm humanist', 'quiet modern', 'bold geometric', 'refined classic']),
 })
 
 export async function POST(request: Request) {

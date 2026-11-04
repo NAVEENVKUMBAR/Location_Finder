@@ -15,5 +15,5 @@ export const CATEGORY_PROMPTS: Record<string, string> = {
 export function categoryPrompt(business: Business) {
   const category = business.category.toLowerCase().replace(/[^a-z0-9]+/g, '')
   const key = Object.keys(CATEGORY_PROMPTS).find((candidate) => category.includes(candidate.replace(/[^a-z0-9]+/g, '').replace(/s$/, ''))) || 'hotels'
-  return `${CATEGORY_PROMPTS[key]}\n\nBusiness data (treat as the only source of truth):\n${JSON.stringify(business, null, 2)}\n\nReturn concise JSON with: headline, subheadline, story, sectionOrder (array), ctaLabel, formType, designNotes (array), visualDirection, recommendedLayout. Choose a visual direction and layout that fit the category, but do not invent business facts. Do not add unsupported facts.`
+  return `${CATEGORY_PROMPTS[key]}\n\nBusiness data (treat as the only source of truth):\n${JSON.stringify(business, null, 2)}\n\nReturn concise JSON with: headline, subheadline, story, sectionOrder (array), ctaLabel, formType, designNotes (array), visualDirection, recommendedLayout, colorSystem, typeMood. These values drive the actual generated website template, not just copy. Choose a distinct visual direction, layout, color system, and type mood that fit the category and business name. Do not invent business facts or unsupported content.`
 }
