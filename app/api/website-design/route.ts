@@ -20,7 +20,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json() as { business?: Business }
     if (!body.business?.name || !body.business.category) return Response.json({ error: 'Business data is required.' }, { status: 400 })
-    const apiKey = process.env.API_KEY
+    const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey) return Response.json({ error: 'Gemini API key is not configured.' }, { status: 503 })
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
