@@ -33,28 +33,7 @@ function formatDay(day: string) {
 type UploadedImage = { name: string; dataUrl: string }
 type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[]; visualDirection?: string; recommendedLayout?: string; colorSystem?: string; typeMood?: string }
 
-export function GeneratedBusinessSite({ business, websiteId, uploadedImages = [], aiDesign, showSourceDownload = false }: { business: Business; websiteId?: string; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign; showSourceDownload?: boolean }) {
-  const [exporting, setExporting] = useState(false)
-
-  async function downloadSource() {
-    if (!websiteId || exporting) return
-    setExporting(true)
-    try {
-      const response = await fetch(`/api/websites/${encodeURIComponent(websiteId)}/export`, { method: 'POST' })
-      if (!response.ok) throw new Error('Export failed')
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `${business.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'business'}-website-source.zip`
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(url)
-    } finally {
-      setExporting(false)
-    }
-  }
+export function GeneratedBusinessSite({ business, uploadedImages = [], aiDesign }: { business: Business; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activePhoto, setActivePhoto] = useState<number | null>(null)
   const [sent, setSent] = useState(false)
@@ -114,7 +93,7 @@ export function GeneratedBusinessSite({ business, websiteId, uploadedImages = []
   const visualDirection = aiDesign?.visualDirection || 'layered editorial'
   const directionClass = visualDirection.replace(/\s+/g, '-')
   return <main data-template={template} data-layout={design.layout} data-design={design.fingerprint} data-visual-direction={visualDirection} style={{ '--ink': aiTheme.ink, '--accent': aiTheme.accent, '--soft': aiTheme.soft, '--wash': aiTheme.wash, '--line': aiTheme.line, '--site-display': design.displayFont, '--site-body': design.bodyFont } as React.CSSProperties} className={`generated-site generated-site--${template} generated-site--${design.layout} generated-site--direction-${directionClass} generated-site--type-${(aiDesign?.typeMood || 'quiet-modern').replace(/\s+/g, '-')} generated-site--variant-${design.variant} generated-site--nav-${design.navigation} generated-site--radius-${design.radius} min-h-screen overflow-hidden bg-[var(--soft)] text-[var(--ink)]`}>
-    <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--soft)]/90 backdrop-blur-xl"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8"><a href="#top" onClick={() => setMenuOpen(false)} className="min-w-0"><span className="block truncate font-serif text-2xl leading-none">{business.name}</span><span className="mt-1 block text-[10px] font-bold uppercase tracking-[.22em] text-[var(--accent)]">{business.category}</span></a><nav className="hidden items-center gap-7 text-sm md:flex" aria-label="Main navigation"><a href="#story">About</a>{photos.length > 0 && <a href="#gallery">Gallery</a>}<a href="#details">Visit</a><a href="#contact">Contact</a></nav><div className="flex items-center gap-2">{showSourceDownload && websiteId && <button type="button" onClick={downloadSource} disabled={exporting} className="hidden rounded-full border border-[var(--line)] px-4 py-2.5 text-sm font-semibold sm:inline-flex">{exporting ? 'Preparing…' : 'Download source'}</button>}{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="hidden rounded-full bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white sm:inline-flex">WhatsApp us</a>}<button type="button" aria-label="Open menu" className="rounded-full border border-[var(--line)] p-2 md:hidden" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button></div></div>{menuOpen && <nav className="border-t border-[var(--line)] px-5 py-4 md:hidden"><div className="flex flex-col gap-4 text-sm"><a href="#story">About</a><a href="#gallery">Gallery</a><a href="#details">Visit</a><a href="#contact">Contact</a></div></nav>}</header>
+    <header className="sticky top-0 z-30 border-b border-[var(--line)] bg-[var(--soft)]/90 backdrop-blur-xl"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8"><a href="#top" onClick={() => setMenuOpen(false)} className="min-w-0"><span className="block truncate font-serif text-2xl leading-none">{business.name}</span><span className="mt-1 block text-[10px] font-bold uppercase tracking-[.22em] text-[var(--accent)]">{business.category}</span></a><nav className="hidden items-center gap-7 text-sm md:flex" aria-label="Main navigation"><a href="#story">About</a>{photos.length > 0 && <a href="#gallery">Gallery</a>}<a href="#details">Visit</a><a href="#contact">Contact</a></nav><div className="flex items-center gap-2">{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="hidden rounded-full bg-[var(--ink)] px-4 py-2.5 text-sm font-semibold text-white sm:inline-flex">WhatsApp us</a>}<button type="button" aria-label="Open menu" className="rounded-full border border-[var(--line)] p-2 md:hidden" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={20} /> : <Menu size={20} />}</button></div></div>{menuOpen && <nav className="border-t border-[var(--line)] px-5 py-4 md:hidden"><div className="flex flex-col gap-4 text-sm"><a href="#story">About</a><a href="#gallery">Gallery</a><a href="#details">Visit</a><a href="#contact">Contact</a></div></nav>}</header>
 
     <section id="top" className="mx-auto max-w-7xl px-5 pt-5 sm:px-8 sm:pt-8"><div className="relative min-h-[600px] overflow-hidden rounded-[2rem] bg-[var(--ink)] sm:min-h-[700px]">{cover ? <img src={cover} alt={`${business.name} verified listing photo`} className="absolute inset-0 h-full w-full object-cover opacity-75" /> : <div aria-hidden="true" className="absolute inset-0 bg-[var(--ink)]"><div className="absolute -right-20 -top-24 h-96 w-96 rounded-full bg-[var(--accent)]/30 blur-3xl" /><div className="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-[var(--wash)]/20 blur-3xl" /></div>}<div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)] via-[var(--ink)]/20 to-transparent" /><div className="relative flex min-h-[600px] flex-col justify-end p-7 text-white sm:min-h-[700px] sm:p-14"><div className="mb-6 flex flex-wrap gap-2 text-xs font-semibold"><span className="rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur">{business.category}</span>{business.rating && <span className="flex items-center gap-1 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur"><Star size={13} fill="currentColor" /> {business.rating} rating</span>}</div><p className="max-w-3xl font-serif text-5xl leading-[.95] sm:text-8xl">{label}.</p><p className="mt-6 max-w-xl text-base leading-7 text-white/80 sm:text-lg">{description}</p><div className="mt-8 flex flex-wrap gap-3"><a href="#contact" className="rounded-full bg-[var(--soft)] px-6 py-3.5 text-sm font-bold text-[var(--ink)] transition hover:bg-white">Make an enquiry <ArrowUpRight className="ml-1 inline" size={16} /></a>{whatsapp && <a href={whatsapp} target="_blank" rel="noreferrer" className="rounded-full border border-white/35 px-6 py-3.5 text-sm font-bold transition hover:bg-white/10">Chat on WhatsApp</a>}</div></div></div></section>
 

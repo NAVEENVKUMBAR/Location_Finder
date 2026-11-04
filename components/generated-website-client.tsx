@@ -8,7 +8,7 @@ type UploadedImage = { name: string; dataUrl: string }
 type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[] }
 type SavedWebsite = { business: Business; uploadedImages?: UploadedImage[]; aiDesign?: AIDesign }
 
-export function GeneratedWebsiteClient({ id, initialDraft, showSourceDownload }: { id: string; initialDraft: SavedWebsite | null; showSourceDownload: boolean }) {
+export function GeneratedWebsiteClient({ id, initialDraft }: { id: string; initialDraft: SavedWebsite | null }) {
   const [draft, setDraft] = useState<SavedWebsite | null>(initialDraft)
 
   useEffect(() => {
@@ -22,5 +22,5 @@ export function GeneratedWebsiteClient({ id, initialDraft, showSourceDownload }:
   }, [id, initialDraft])
 
   if (!draft) return null
-  return <GeneratedBusinessSite business={draft.business} websiteId={initialDraft ? id : undefined} uploadedImages={draft.uploadedImages} aiDesign={draft.aiDesign} showSourceDownload={showSourceDownload} />
+  return <GeneratedBusinessSite business={draft.business} uploadedImages={draft.uploadedImages} aiDesign={draft.aiDesign} />
 }

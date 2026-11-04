@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { NextResponse } from 'next/server'
-import { getDraft } from '@/app/api/websites/route'
+import { getDraft } from '@/lib/generated-websites'
 import type { Business } from '@/lib/types'
 
 function safeName(value: string) {
