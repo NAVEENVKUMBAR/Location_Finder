@@ -250,8 +250,8 @@ function ProfessionalWebsite({ business, onClose }: { business: Business; onClos
     setIsCreatingSite(true);
     try {
       const aiResponse = await fetch('/api/website-design', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business }) });
-      if (!aiResponse.ok) throw new Error('AI website generation is unavailable. Please try again.');
-      const aiPayload = await aiResponse.json() as { design?: unknown };
+      const aiPayload = await aiResponse.json() as { design?: unknown; error?: string };
+      if (!aiResponse.ok || !aiPayload.design) throw new Error(aiPayload.error || 'AI website generation is unavailable. Please try again.');
       const response = await fetch('/api/websites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business, uploadedImages, aiDesign: aiPayload.design }) });
 const payload = await response.json() as { id?: string; url?: string };
   if (response.ok && payload.url && payload.id) {

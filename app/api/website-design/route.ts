@@ -30,6 +30,8 @@ export async function POST(request: Request) {
     return Response.json({ design: result.object })
   } catch (error) {
     console.error('[v0] Gemini website design generation failed', error)
-    return Response.json({ error: 'AI design generation is unavailable right now.' }, { status: 502 })
+    const message = error instanceof Error ? error.message : ''
+    const requiresBilling = message.toLowerCase().includes('credit card') || message.toLowerCase().includes('customer_verification_required')
+    return Response.json({ error: requiresBilling ? 'AI Gateway requires a valid credit card on the connected Vercel team before Gemini can generate websites.' : 'AI design generation is unavailable right now.' }, { status: requiresBilling ? 503 : 502 })
   }
 }
