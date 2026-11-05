@@ -253,10 +253,10 @@ function ProfessionalWebsite({ business, onClose }: { business: Business; onClos
       const aiPayload = await aiResponse.json() as { design?: unknown; error?: string };
       if (!aiResponse.ok || !aiPayload.design) throw new Error(aiPayload.error || 'AI website generation is unavailable. Please try again.');
       const response = await fetch('/api/websites', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ business, uploadedImages, aiDesign: aiPayload.design }) });
-const payload = await response.json() as { id?: string; url?: string };
+const payload = await response.json() as { id?: string; url?: string; fallbackUrl?: string };
   if (response.ok && payload.url && payload.id) {
     try { window.localStorage.setItem(`sthala:website:${payload.id}`, JSON.stringify({ business, uploadedImages, aiDesign: aiPayload.design })); } catch { /* Storage may be unavailable in private browsing. */ }
-    setSiteUrl(`${payload.url}?view=1`);
+    setSiteUrl(payload.url);
   }
     } catch (error) {
       setGenerationError(error instanceof Error ? error.message : 'AI website generation failed. Please try again.');
