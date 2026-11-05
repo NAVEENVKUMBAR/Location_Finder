@@ -24,7 +24,8 @@ export async function POST(request: Request) {
     ? body.uploadedImages.filter((image): image is UploadedImage => Boolean(image && typeof image.name === 'string' && typeof image.dataUrl === 'string' && image.dataUrl.startsWith('data:image/'))).slice(0, 24)
     : undefined
   await db.insert(generatedWebsites).values({ id, business: body.business, uploadedImages, aiDesign: body.aiDesign, createdAt: new Date() })
-  return NextResponse.json({ id, url: `https://${id}.sustunenn.com`, fallbackUrl: `/generated/${encodeURIComponent(id)}` }, { status: 201 })
+  const fallbackUrl = `/generated/${encodeURIComponent(id)}`
+  return NextResponse.json({ id, url: fallbackUrl, customUrl: `https://${id}.sustunenn.com` }, { status: 201 })
 }
 
 export async function GET(request: Request) {
