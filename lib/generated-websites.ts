@@ -6,6 +6,11 @@ import { eq } from 'drizzle-orm'
 type UploadedImage = { name: string; dataUrl: string }
 type AIDesign = { headline: string; subheadline: string; story: string; sectionOrder: string[]; ctaLabel: string; formType: 'reservation' | 'stay' | 'table' | 'enquiry'; designNotes: string[]; visualDirection?: string; recommendedLayout?: string; colorSystem?: string; typeMood?: string }
 
+export async function getDrafts() {
+  const drafts = await db.select().from(generatedWebsites).orderBy(generatedWebsites.createdAt)
+  return drafts.map((draft) => ({ id: draft.id, business: draft.business as Business, createdAt: draft.createdAt.toISOString() }))
+}
+
 export async function getDraft(id: string) {
   const [draft] = await db.select().from(generatedWebsites).where(eq(generatedWebsites.id, id)).limit(1)
   if (!draft) return null

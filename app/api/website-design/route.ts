@@ -2,6 +2,10 @@ import { z } from 'zod'
 import { categoryPrompt } from '@/lib/category-prompts'
 import type { Business } from '@/lib/types'
 
+const requestCounts = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 8
+const RATE_WINDOW = 60_000
+
 const designSchema = z.object({
   headline: z.string(),
   subheadline: z.string(),
@@ -18,6 +22,11 @@ const designSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const clientKey = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+    const now = Date.now()
+    const current = requestCounts.get(clientKey)
+    if (current && current.resetAt > now && current.count >= RATE_LIMIT) return Response.json({ error: 'AI generation rate limit reached. Please try again in a minute.' }, { status: 429 })
+    requestCounts.set(clientKey, current && current.resetAt > now ? { count: current.count + 1, resetAt: current.resetAt } : { count: 1, resetAt: now + RATE_WINDOW })
     const body = await request.json() as { business?: Business }
     if (!body.business?.name || !body.business.category) return Response.json({ error: 'Business data is required.' }, { status: 400 })
     const apiKey = process.env.GEMINI_API_KEY
